@@ -1,0 +1,15 @@
+#cloud-config
+chpasswd:
+  expire: false
+  users:
+    - {name: altlinux, password: P@ssw0rd, type: text}
+    - {name: root, password: toor, type: text}
+  ssh_pwauth: true
+
+users:
+  - name: altlinux
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: wheel
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC0eJYV3FSt4R9hsYXqkzVWWDz26GXm0XJi4jCNDuDJuR0H56/SO1278IppLTRIoa2MRb6Yq+jRQQXO/bi0mJc6rFL3OYmWbt6h/GSgniaTuf7nx9T52l/Mz+YrhHGEpkYwfONmCJdS5zlpkIrqG/H57rSsc/NuGmri7qMrQ1WCQw7OIq5pDTi1xINQ2GLbcVLkZW0rgD6nbgMBXAjnBcGloru2XpDudIbizKMyYnhATH2RtUBZiA7fkWfKNT7b4/CQR8JQPwf4gEsWnkm7L5WmiA3ief4U1jTKdiLLuwNWHdBfIl2+WzuWkrUtkKhj8lK9QAOGOkdaY0VpedbqSi2LQnNM5KA8Ne/wBVAq9TMgVFiN4OB1lJSF8QPqFVLGkGDyypzhyTLKiA7y8V/HyLtvAVLD75KCP1H5q1LQrJcOyjknfIhCos5KwexSNOgX2f4d9kk+SBbse1ad6nXxq8uIVGD5hCnCo1904tdRJRzJPufFOiUVA5FWh0pi31mcpnk= altlinux@cloud-adm
