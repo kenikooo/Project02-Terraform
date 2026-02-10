@@ -1,0 +1,56 @@
+---
+- name: Config Cloud-MON
+  hosts: cloud-mon
+  become: yes
+  tasks:
+    - name: Install Docker and Docker Compose
+      community.general.apt_rpm:
+        name:
+          - docker-engine
+          - docker-compose-v2
+        state: present
+
+    - name: Create directory for monitoring
+      file:
+        path: /home/altlinux/monitoring
+        state: directory
+        owner: altlinux
+        group: altlinux
+
+    - name: Copy monitoring.yml
+      copy:
+        src: /home/altlinux/monitoring/monitoring.yml
+        dest: /home/altlinux/monitoring.yml
+        owner: altlinux
+        group: altlinux
+        mode: '0644'
+
+    - name: Copy prometheus.yml config
+      copy:
+        src: /home/altlinux/monitoring/prometheus.yml
+        dest: /home/altlinux/prometheus.yml
+        owner: altlinux
+        group: altlinux
+        mode: '0644'
+
+    - name: Enable and start docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: add user altlinux to docker group
+      user:
+        name: altlinux
+        groups: docker
+        append: yes
+
+    - name: Reset connection to apply group changes
+      meta: reset_connection
+
+    - name: Start monitoring services
+      community.docker.docker_compose_v2:
+        project_src: /home/altlinux/
+        files:
+          - monitoring.yml
+        state: present

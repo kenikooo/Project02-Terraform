@@ -1,0 +1,35 @@
+---
+- name: Config HAProxy on HA Nodes
+  hosts: haproxy_nodes
+  become: yes
+  tasks:
+    - name: Install HAProxy
+      community.general.apt_rpm:
+        name: haproxy
+        state: present
+        update_cache: yes
+        clean: yes
+    
+
+    - name: Create SSL Directory
+      file:
+        path: /etc/haproxy/ssl
+        state: directory
+
+    - name: Copy SSL Cert
+      copy:
+        src: files/haproxy.pem
+        dest: /etc/haproxy/ssl/haproxy.pem
+        mode: '0600'
+
+    - name: Config HAProxy
+      template:
+        src: templates/haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+      notify: Restart HAProxy
+  
+  handlers:
+    - name: Restart HAProxy
+      service:
+        name: haproxy
+        state: restarted

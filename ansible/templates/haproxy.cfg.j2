@@ -1,0 +1,30 @@
+global
+	log /dev/log local0
+	log /dev/log local1 notice
+	chroot /var/lib/haproxy
+	user haproxy
+	group haproxy
+	daemon
+
+defaults
+	local global
+	mode http
+	options httplog
+	option dontlognull
+	timeout connect 5000
+	timeout client 50000
+	timeout server 50000
+
+frontend http_https_front
+	bind *:80
+	bind *:443 ssl crrt /etc/haproxy/ssl/haproxy.pem
+	mode http
+	option forwardfor
+	default_backend web_servers
+
+backend web_servers
+	mode http
+	balance roundrobin
+	option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+	server Cloud-WEB01 192.168.10.3:80 check
+	server Cloud-WEB02 192.168.10.4:80 check
